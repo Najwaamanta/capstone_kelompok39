@@ -1,0 +1,97 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.vue';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --color-maroon-50: #fdf2f4;
+    --color-maroon-100: #fce7eb;
+    --color-maroon-200: #fad0d8;
+    --color-maroon-300: #f5a8b7;
+    --color-maroon-400: #ed738c;
+    --color-maroon-500: #df4466;
+    --color-maroon-600: #c9274c;
+    --color-maroon-700: #a71b3c;
+    --color-maroon-800: #7a1228;
+    --color-maroon-900: #540818;
+    --color-maroon-950: #38030e;
+}
+
+:root {
+    --primary: #7A1228;
+    --primary-hover: #630c1f;
+    --primary-active: #4d0817;
+    --primary-subtle: #FDF1F3;
+    --primary-border: #F7D6DC;
+}
+
+body {
+    font-family: var(--font-sans);
+    color: #2D3748;
+    background-color: #FBF9F9;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+/* Concentric rings background for login/registration split side */
+.concentric-bg {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, #7A1228 0%, #5E0C1E 50%, #440714 100%);
+}
+
+.concentric-bg::before,
+.concentric-bg::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.concentric-bg::before {
+    width: 680px;
+    height: 680px;
+    bottom: -150px;
+    left: -120px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 60%, transparent 80%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.concentric-bg::after {
+    width: 1050px;
+    height: 1050px;
+    bottom: -320px;
+    left: -280px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+@keyframes toastTimer {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+.toast-timer-bar {
+    animation: toastTimer 3.5s linear forwards;
+}
