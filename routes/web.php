@@ -13,6 +13,7 @@ use App\Http\Controllers\Gudang\GudangNegotiationController;
 use App\Http\Controllers\Gudang\GudangNotificationController;
 use App\Http\Controllers\Gudang\GudangOrderController;
 use App\Http\Controllers\Gudang\GudangProfileController;
+use App\Http\Controllers\Gudang\GudangProgresKonveksiController;
 use App\Http\Controllers\Gudang\GudangQualityControlController;
 use App\Http\Controllers\Toko\TokoDashboardController;
 use App\Http\Controllers\Toko\TokoNegotiationController;
@@ -126,7 +127,7 @@ Route::middleware('auth')->group(function () {
         // Navigasi Ruang Kerja Sesuai Figma
         Route::get('/persediaan', function () { return \Inertia\Inertia::render('Gudang/Persediaan'); })->name('persediaan');
         Route::get('/apparel', function () { return \Inertia\Inertia::render('Gudang/Apparel'); })->name('apparel');
-        Route::get('/progres-konveksi', function () { return redirect()->route('gudang.orders.index', ['status' => 'dalam_produksi']); })->name('progres-konveksi');
+        Route::get('/progres-konveksi', [GudangProgresKonveksiController::class, 'index'])->name('progres-konveksi');
         Route::get('/quality-control', [GudangQualityControlController::class, 'index'])->name('quality-control');
         Route::post('/quality-control/{order}', [GudangQualityControlController::class, 'store'])->name('quality-control.store');
 

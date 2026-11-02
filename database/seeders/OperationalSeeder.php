@@ -96,10 +96,10 @@ class OperationalSeeder extends Seeder
         );
 
         $this->createStagesForOrder($order18, [
-            'pemotongan' => ['status' => 'selesai', 'mulai' => Carbon::parse('2025-06-21'), 'selesai' => Carbon::parse('2025-06-21')],
-            'sablon' => ['status' => 'selesai', 'mulai' => Carbon::parse('2025-06-22'), 'selesai' => Carbon::parse('2025-06-23')],
-            'konveksi' => ['status' => 'sedang_dikerjakan', 'mulai' => Carbon::parse('2025-06-23'), 'selesai' => Carbon::parse('2025-06-25')],
-            'qc_gudang' => ['status' => 'belum_dimulai', 'mulai' => null, 'selesai' => Carbon::parse('2025-06-27')],
+            'pemotongan' => ['status' => 'selesai', 'mulai' => Carbon::parse('2025-06-20'), 'selesai' => Carbon::parse('2025-06-21')],
+            'sablon' => ['status' => 'sedang_dikerjakan', 'mulai' => Carbon::parse('2025-06-22'), 'selesai' => Carbon::parse('2025-06-23')],
+            'konveksi' => ['status' => 'belum_dimulai', 'mulai' => Carbon::parse('2025-06-24'), 'selesai' => Carbon::parse('2025-06-25')],
+            'qc_gudang' => ['status' => 'belum_dimulai', 'mulai' => Carbon::parse('2025-06-26'), 'selesai' => Carbon::parse('2025-06-27')],
         ]);
 
         OrderHistory::firstOrCreate(
