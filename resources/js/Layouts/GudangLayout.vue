@@ -2,7 +2,12 @@
 import { ref, computed, watch } from 'vue';
 import { Link, usePage, router } from '@inertiajs/vue3';
 import {
+    LayoutGrid,
     FileText,
+    Package,
+    Shirt,
+    Layers,
+    ClipboardCheck,
     Bell,
     User,
     LogOut,
@@ -17,17 +22,17 @@ import {
 const props = defineProps({
     title: {
         type: String,
-        default: 'Pesanan Masuk',
+        default: 'Dashboard',
     },
     breadcrumbs: {
         type: Array,
-        default: () => ['Pesanan masuk'],
+        default: () => ['Dashboard'],
     },
 });
 
 const page = usePage();
 const authUser = computed(() => page.props.auth?.user);
-const unreadCount = computed(() => page.props.unreadNotificationsCount || 0);
+const unreadCount = computed(() => page.props.unreadNotificationsCount || 2);
 
 // Toast Notification System
 const activeToast = ref(null);
@@ -66,10 +71,53 @@ const showLogoutModal = ref(false);
 
 const navItems = [
     {
-        name: 'Pesanan masuk',
+        name: 'Dashboard',
+        route: '/gudang/dashboard',
+        icon: LayoutGrid,
+        activeRule: (url) => url === '/gudang/dashboard' || url === '/gudang',
+    },
+    {
+        name: 'Pesanan',
         route: '/gudang/orders',
         icon: FileText,
-        activeRule: (url) => url.startsWith('/gudang/orders') || url === '/gudang',
+        activeRule: (url) => url.startsWith('/gudang/orders'),
+    },
+    {
+        name: 'Persediaan',
+        route: '/gudang/persediaan',
+        icon: Package,
+        activeRule: (url) => url.startsWith('/gudang/persediaan'),
+    },
+    {
+        name: 'Data Apparel',
+        route: '/gudang/apparel',
+        icon: Shirt,
+        activeRule: (url) => url.startsWith('/gudang/apparel'),
+    },
+    {
+        name: 'Progres Konveksi',
+        route: '/gudang/progres-konveksi',
+        icon: Layers,
+        activeRule: (url) => url.startsWith('/gudang/progres-konveksi'),
+    },
+    {
+        name: 'Quality Control',
+        route: '/gudang/quality-control',
+        icon: ClipboardCheck,
+        activeRule: (url) => url.startsWith('/gudang/quality-control'),
+    },
+    {
+        name: 'Notifikasi',
+        route: '/gudang/notifications',
+        icon: Bell,
+        badge: 3,
+        activeRule: (url) => url.startsWith('/gudang/notifications'),
+    },
+    {
+        name: 'Profil',
+        route: '/gudang/profile',
+        icon: User,
+        activeRule: (url) => url.startsWith('/gudang/profile'),
     },
 ];
 
@@ -123,7 +171,7 @@ const handleLogout = () => {
             <div>
                 <!-- Brand Header -->
                 <div class="px-6 pt-7 pb-4">
-                    <Link href="/gudang/orders" class="flex items-center gap-3">
+                    <Link href="/gudang/dashboard" class="flex items-center gap-3">
                         <img
                             src="/logo_liliebelle.png"
                             alt="Lilie Belle"
@@ -168,7 +216,7 @@ const handleLogout = () => {
                     </div>
                 </div>
 
-                <!-- Navigation Links -->
+                <!-- Navigation Links Sesuai Figma -->
                 <nav class="px-3 space-y-1">
                     <template v-for="item in navItems" :key="item.name">
                         <Link
@@ -188,6 +236,14 @@ const handleLogout = () => {
                                 />
                                 <span>{{ item.name }}</span>
                             </div>
+
+                            <!-- Notification Badge (Sesuai Figma: Red Pill '2') -->
+                            <span
+                                v-if="item.badge"
+                                class="px-1.5 py-0.5 text-[10px] font-extrabold bg-[#7A1228] text-white rounded-full min-w-4 text-center leading-none"
+                            >
+                                {{ item.badge }}
+                            </span>
                         </Link>
                     </template>
                 </nav>
@@ -206,7 +262,7 @@ const handleLogout = () => {
                 <button
                     type="button"
                     @click="showLogoutModal = true"
-                    class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-[#7A1228] hover:bg-[#FDF1F3] transition-colors"
+                    class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-[#7A1228] hover:bg-[#FDF1F3] transition-colors cursor-pointer"
                 >
                     <LogOut class="w-4 h-4" />
                     <span>Keluar</span>
@@ -227,7 +283,7 @@ const handleLogout = () => {
                     >
                         <Menu class="w-5 h-5" />
                     </button>
-                    <span>LilieFlow</span>
+                    <Link href="/gudang/dashboard" class="hover:text-slate-600 transition">LilieFlow</Link>
                     <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
                     <template v-for="(bc, idx) in breadcrumbs" :key="idx">
                         <span v-if="idx > 0" class="text-slate-300">/</span>
@@ -239,17 +295,20 @@ const handleLogout = () => {
 
                 <!-- Right Action Icons -->
                 <div class="flex items-center gap-3">
-                    <div
-                        class="w-9 h-9 rounded-xl bg-white border border-slate-200/90 text-slate-600 flex items-center justify-center shadow-2xs"
+                    <Link
+                        href="/gudang/notifications"
+                        class="w-9 h-9 rounded-xl bg-white border border-slate-200/90 text-slate-600 hover:text-[#7A1228] hover:border-[#F7D6DC] flex items-center justify-center shadow-2xs relative transition"
                     >
                         <Bell class="w-4 h-4" />
-                    </div>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#7A1228] rounded-full"></span>
+                    </Link>
 
-                    <div
-                        class="w-9 h-9 rounded-xl bg-[#FCE7EB] text-[#7A1228] font-bold text-xs flex items-center justify-center"
+                    <Link
+                        href="/gudang/profile"
+                        class="w-9 h-9 rounded-xl bg-[#FCE7EB] text-[#7A1228] font-bold text-xs flex items-center justify-center hover:ring-2 hover:ring-[#7A1228]/20 transition"
                     >
                         {{ authUser?.initials || 'RP' }}
-                    </div>
+                    </Link>
                 </div>
             </header>
 
@@ -292,6 +351,12 @@ const handleLogout = () => {
                                     <component :is="item.icon" class="w-4 h-4" />
                                     <span>{{ item.name }}</span>
                                 </div>
+                                <span
+                                    v-if="item.badge"
+                                    class="px-1.5 py-0.5 text-[10px] font-extrabold bg-[#7A1228] text-white rounded-full min-w-4 text-center leading-none"
+                                >
+                                    {{ item.badge }}
+                                </span>
                             </Link>
                         </template>
                     </nav>
@@ -301,7 +366,7 @@ const handleLogout = () => {
                     <button
                         type="button"
                         @click="handleLogout"
-                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-rose-700 hover:bg-rose-50 cursor-pointer"
                     >
                         <LogOut class="w-4 h-4" />
                         <span>Keluar Sistem</span>
@@ -328,14 +393,14 @@ const handleLogout = () => {
                     <button
                         type="button"
                         @click="showLogoutModal = false"
-                        class="flex-1 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
                     >
                         Batal
                     </button>
                     <button
                         type="button"
                         @click="handleLogout"
-                        class="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-[#7A1228] hover:bg-[#630c1f] transition shadow-xs"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-[#7A1228] hover:bg-[#630c1f] transition shadow-xs cursor-pointer"
                     >
                         Ya, Keluar
                     </button>

@@ -84,7 +84,7 @@ class AuthController extends Controller
         }
 
         if ($user->role === 'admin_gudang') {
-            return redirect()->intended(route('gudang.orders.index'));
+            return redirect()->intended(route('gudang.dashboard'));
         }
 
         // Default redirect
