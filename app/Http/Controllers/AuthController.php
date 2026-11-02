@@ -17,9 +17,13 @@ class AuthController extends Controller
     /**
      * Show the login page.
      */
-    public function showLogin(): Response
+    public function showLogin()
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'admin_konveksi') {
+                return redirect()->route('konveksi.dashboard');
+            }
             return redirect()->route('admin.dashboard');
         }
 
@@ -73,16 +77,24 @@ class AuthController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        // For now, if non-admin logs in (e.g. admin toko, gudang, konveksi)
+        if ($user->role === 'admin_konveksi') {
+            return redirect()->intended(route('konveksi.dashboard'));
+        }
+
+        // Default fallback
         return redirect()->intended(route('admin.dashboard'));
     }
 
     /**
      * Show registration page.
      */
-    public function showRegister(): Response
+    public function showRegister()
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'admin_konveksi') {
+                return redirect()->route('konveksi.dashboard');
+            }
             return redirect()->route('admin.dashboard');
         }
 

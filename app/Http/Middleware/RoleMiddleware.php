@@ -37,14 +37,28 @@ class RoleMiddleware
 
         // Check role permission
         if (!empty($roles) && !in_array($user->role, $roles)) {
-            // For non-admin users trying to access admin routes, log out and redirect with message
+            if ($user->role === 'admin_konveksi') {
+                return redirect()->route('konveksi.dashboard')->with(
+                    'error',
+                    'Akun Anda tidak memiliki hak akses ke halaman tersebut.'
+                );
+            }
+
+            if ($user->role === 'administrator') {
+                return redirect()->route('admin.dashboard')->with(
+                    'error',
+                    'Akun Anda tidak memiliki hak akses ke halaman tersebut.'
+                );
+            }
+
+            // For unauthorized user roles
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
             return redirect()->route('login')->with(
                 'error',
-                'Akun Anda (' . $user->name . ') tidak memiliki hak akses ke halaman Administrator. Silakan masuk dengan akun Administrator.'
+                'Akun Anda (' . $user->name . ') tidak memiliki hak akses ke halaman tersebut.'
             );
         }
 

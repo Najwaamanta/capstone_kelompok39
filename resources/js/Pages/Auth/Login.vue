@@ -24,6 +24,11 @@ const fillAdminCredentials = () => {
     form.password = 'password';
 };
 
+const fillKonveksiCredentials = () => {
+    form.email = 'siti@sinarjaya.id';
+    form.password = 'password';
+};
+
 const submit = () => {
     form.post('/login', {
         onFinish: () => form.reset('password'),
@@ -98,18 +103,47 @@ const submit = () => {
                 </div>
 
                 <!-- Quick Demo Login Helper Card -->
-                <div class="mb-6 p-3.5 rounded-xl bg-[#FDF1F3] border border-[#F7D2DA] flex items-center justify-between text-xs">
-                    <div>
-                        <span class="font-bold text-[#7A1228] block">Akun Administrator Demo:</span>
-                        <span class="text-[#5A3F46]">admin@liliebelle.co.id / password</span>
+                <div class="mb-6 p-4 rounded-2xl bg-[#FDF1F3] border border-[#F7D2DA] text-xs space-y-3">
+                    <div class="font-bold text-[#7A1228] flex items-center justify-between">
+                        <span>Akun Demo Cepat:</span>
+                        <span class="text-[10px] uppercase font-semibold text-[#8E7E84]">Pilih role untuk login</span>
                     </div>
-                    <button
-                        type="button"
-                        @click="fillAdminCredentials"
-                        class="px-3 py-1.5 rounded-lg bg-[#7A1228] text-white font-semibold text-xs hover:bg-[#600d1e] transition-colors shrink-0 ml-2"
-                    >
-                        Isi Cepat
-                    </button>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- Admin Konveksi Quick Fill -->
+                        <button
+                            type="button"
+                            @click="fillKonveksiCredentials"
+                            class="p-2.5 rounded-xl bg-white border border-[#F2D0D8] text-left hover:border-[#7A1228] hover:bg-[#FFF9FA] transition-all group shadow-2xs"
+                        >
+                            <span class="font-bold text-[#7A1228] block group-hover:text-[#9A1633]">
+                                Siti Rahma
+                            </span>
+                            <span class="text-[11px] text-gray-500 block">
+                                Admin Konveksi
+                            </span>
+                            <span class="text-[10px] text-gray-400 font-mono block mt-0.5 truncate">
+                                siti@sinarjaya.id
+                            </span>
+                        </button>
+
+                        <!-- Administrator Quick Fill -->
+                        <button
+                            type="button"
+                            @click="fillAdminCredentials"
+                            class="p-2.5 rounded-xl bg-white border border-[#F2D0D8] text-left hover:border-[#7A1228] hover:bg-[#FFF9FA] transition-all group shadow-2xs"
+                        >
+                            <span class="font-bold text-[#7A1228] block group-hover:text-[#9A1633]">
+                                Dian Sastro
+                            </span>
+                            <span class="text-[11px] text-gray-500 block">
+                                Administrator
+                            </span>
+                            <span class="text-[10px] text-gray-400 font-mono block mt-0.5 truncate">
+                                admin@liliebelle.co.id
+                            </span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Flash Error (dari middleware / session) -->
