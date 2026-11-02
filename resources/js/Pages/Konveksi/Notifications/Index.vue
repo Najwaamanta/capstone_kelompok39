@@ -1,14 +1,13 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import KonveksiLayout from '@/Layouts/KonveksiLayout.vue';
 import {
-    Bell,
-    CheckCircle2,
-    Clock,
-    AlertCircle,
-    Info,
-    Check
+    Factory,
+    Calendar,
+    FileText,
+    ClipboardCheck,
+    Bell
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -19,15 +18,50 @@ const props = defineProps({
 });
 
 const localNotifications = ref([...props.notifications]);
+const activeTab = ref('semua'); // 'semua' | 'unread'
 
-const markAsRead = (notif) => {
-    notif.is_unread = false;
+const totalCount = computed(() => localNotifications.value.length);
+const unreadCount = computed(() => localNotifications.value.filter(n => n.is_unread).length);
+
+const filteredNotifications = computed(() => {
+    if (activeTab.value === 'unread') {
+        return localNotifications.value.filter(n => n.is_unread);
+    }
+    return localNotifications.value;
+});
+
+const toggleRead = (notif) => {
+    notif.is_unread = !notif.is_unread;
 };
 
-const markAllAsRead = () => {
-    localNotifications.value.forEach((notif) => {
-        notif.is_unread = false;
-    });
+const getIconConfig = (type) => {
+    switch (type) {
+        case 'factory':
+            return {
+                icon: Factory,
+                wrapperClass: 'bg-[#E0F2FE] text-[#0284C7]',
+            };
+        case 'calendar':
+            return {
+                icon: Calendar,
+                wrapperClass: 'bg-[#FEF3C7] text-[#D97706]',
+            };
+        case 'file':
+            return {
+                icon: FileText,
+                wrapperClass: 'bg-[#FDF1F3] text-[#7A1228]',
+            };
+        case 'qc':
+            return {
+                icon: ClipboardCheck,
+                wrapperClass: 'bg-[#DCFCE7] text-[#16A34A]',
+            };
+        default:
+            return {
+                icon: Bell,
+                wrapperClass: 'bg-[#FDF1F3] text-[#7A1228]',
+            };
+    }
 };
 </script>
 
@@ -35,92 +69,134 @@ const markAllAsRead = () => {
     <Head title="Notifikasi - Admin Konveksi" />
 
     <KonveksiLayout title="Notifikasi">
-        <!-- Page Header matching screenshot exactly -->
-        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-                <h1 class="text-2xl font-extrabold text-[#1F2937] tracking-tight">
-                    Notifikasi
-                </h1>
-                <p class="text-sm text-[#6B7280] mt-0.5">
-                    Pembaruan tugas, perubahan jadwal, dan informasi dari gudang maupun administrator.
-                </p>
-            </div>
-
-            <!-- Optional quick action: Tandai semua telah dibaca -->
-            <button
-                v-if="localNotifications.some(n => n.is_unread)"
-                type="button"
-                @click="markAllAsRead"
-                class="self-start sm:self-auto text-xs font-semibold text-[#7A1228] hover:text-[#9A1633] hover:underline flex items-center gap-1 transition-colors"
-            >
-                <Check class="w-3.5 h-3.5" />
-                <span>Tandai semua dibaca</span>
-            </button>
-        </div>
-
-        <!-- Main Card Container matching screenshot -->
-        <div class="bg-white rounded-2xl border border-[#F0E6E8] shadow-xs divide-y divide-[#F5ECEF] overflow-hidden">
-            <div
-                v-for="notif in localNotifications"
-                :key="notif.id"
-                @click="markAsRead(notif)"
-                class="p-6 transition-all duration-150 flex items-start justify-between gap-4 hover:bg-[#FDF9FA]/70 cursor-pointer group"
-            >
-                <!-- Left: Rounded Icon + Title & Description -->
-                <div class="flex items-start gap-4 min-w-0 flex-1">
-                    <!-- Icon Box -->
-                    <div
+        <!-- Main Notification Container matching screenshot exactly -->
+        <div class="bg-white rounded-2xl border border-[#F0E6E8] shadow-xs overflow-hidden">
+            <!-- Tabs Bar Header -->
+            <div class="px-6 pt-5 border-b border-[#F0E6E8]">
+                <div class="flex items-center gap-6">
+                    <!-- Tab: Semua -->
+                    <button
+                        type="button"
+                        @click="activeTab = 'semua'"
                         :class="[
-                            'w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105',
-                            notif.type === 'urgent' ? 'bg-[#FDF1F3] text-[#7A1228]' :
-                            notif.type === 'info' ? 'bg-[#E0F2FE] text-[#0284C7]' :
-                            'bg-[#DCFCE7] text-[#16A34A]'
+                            'pb-3 flex items-center gap-2 text-sm transition-all relative',
+                            activeTab === 'semua'
+                                ? 'font-bold text-[#7A1228]'
+                                : 'font-medium text-[#6B7280] hover:text-[#7A1228]'
                         ]"
                     >
-                        <AlertCircle v-if="notif.type === 'urgent'" class="w-6 h-6 stroke-[2]" />
-                        <Info v-else-if="notif.type === 'info'" class="w-6 h-6 stroke-[2]" />
-                        <CheckCircle2 v-else class="w-6 h-6 stroke-[2]" />
-                    </div>
+                        <span>Semua</span>
+                        <span
+                            :class="[
+                                'px-2 py-0.5 rounded-full text-xs font-semibold',
+                                activeTab === 'semua'
+                                    ? 'bg-[#FDF1F3] text-[#7A1228]'
+                                    : 'bg-gray-100 text-gray-500'
+                            ]"
+                        >
+                            {{ totalCount }}
+                        </span>
 
-                    <!-- Texts -->
-                    <div class="min-w-0 flex-1 pt-0.5">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <h3 class="text-sm font-bold text-[#1F2937]">
-                                {{ notif.title }}
-                            </h3>
-                            <!-- Red Unread Indicator Dot matching screenshot -->
-                            <span
-                                v-if="notif.is_unread"
-                                class="w-2 h-2 rounded-full bg-[#7A1228] inline-block shrink-0"
-                            ></span>
-                        </div>
+                        <!-- Active Bottom Border Indicator -->
+                        <span
+                            v-if="activeTab === 'semua'"
+                            class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7A1228] rounded-full"
+                        ></span>
+                    </button>
 
-                        <!-- Description -->
-                        <p class="text-xs text-[#6B7280] mt-1.5 leading-relaxed">
-                            {{ notif.description }}
-                        </p>
-                    </div>
-                </div>
+                    <!-- Tab: Belum dibaca -->
+                    <button
+                        type="button"
+                        @click="activeTab = 'unread'"
+                        :class="[
+                            'pb-3 flex items-center gap-2 text-sm transition-all relative',
+                            activeTab === 'unread'
+                                ? 'font-bold text-[#7A1228]'
+                                : 'font-medium text-[#6B7280] hover:text-[#7A1228]'
+                        ]"
+                    >
+                        <span>Belum dibaca</span>
+                        <span
+                            :class="[
+                                'px-2 py-0.5 rounded-full text-xs font-semibold',
+                                activeTab === 'unread'
+                                    ? 'bg-[#FDF1F3] text-[#7A1228]'
+                                    : 'bg-gray-100 text-gray-500'
+                            ]"
+                        >
+                            {{ unreadCount }}
+                        </span>
 
-                <!-- Right: Timestamp with Clock Icon -->
-                <div class="flex items-center gap-1.5 text-xs text-gray-400 whitespace-nowrap shrink-0 pt-1">
-                    <Clock class="w-3.5 h-3.5 text-gray-400" />
-                    <span>{{ notif.created_at }}</span>
+                        <!-- Active Bottom Border Indicator -->
+                        <span
+                            v-if="activeTab === 'unread'"
+                            class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7A1228] rounded-full"
+                        ></span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Empty State if no notifications -->
-            <div
-                v-if="localNotifications.length === 0"
-                class="p-16 text-center"
-            >
-                <div class="w-12 h-12 rounded-2xl bg-[#FDF1F3] text-[#7A1228] flex items-center justify-center mx-auto mb-3">
-                    <Bell class="w-6 h-6" />
+            <!-- Notification Items List -->
+            <div class="divide-y divide-[#F0E6E8]">
+                <div
+                    v-for="notif in filteredNotifications"
+                    :key="notif.id"
+                    @click="toggleRead(notif)"
+                    class="p-6 flex items-start justify-between gap-5 transition-colors hover:bg-[#FDF9FA]/70 cursor-pointer group"
+                >
+                    <!-- Left: Rounded Icon + Texts -->
+                    <div class="flex items-start gap-4 min-w-0 flex-1">
+                        <!-- Icon Box -->
+                        <div
+                            :class="[
+                                'w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-transform group-hover:scale-105',
+                                getIconConfig(notif.type).wrapperClass
+                            ]"
+                        >
+                            <component
+                                :is="getIconConfig(notif.type).icon"
+                                class="w-5 h-5 stroke-[2]"
+                            />
+                        </div>
+
+                        <!-- Content Details -->
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-sm font-bold text-[#1F2937] leading-snug">
+                                {{ notif.title }}
+                            </h3>
+                            <p class="text-xs text-[#6B7280] mt-1 leading-relaxed">
+                                {{ notif.description }}
+                            </p>
+                            <div class="text-[11px] text-[#9CA3AF] mt-2 font-medium">
+                                {{ notif.time_ago }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Red Dot Indicator for Unread -->
+                    <div class="shrink-0 self-center pl-2">
+                        <span
+                            v-if="notif.is_unread"
+                            class="w-2 h-2 rounded-full bg-[#7A1228] inline-block"
+                            title="Belum dibaca"
+                        ></span>
+                        <span v-else class="w-2 h-2 inline-block"></span>
+                    </div>
                 </div>
-                <h3 class="text-sm font-bold text-gray-800">Tidak ada notifikasi</h3>
-                <p class="text-xs text-gray-400 mt-1">
-                    Semua pembaruan operasional akan ditampilkan di sini.
-                </p>
+
+                <!-- Empty State -->
+                <div
+                    v-if="filteredNotifications.length === 0"
+                    class="p-16 text-center"
+                >
+                    <div class="w-12 h-12 rounded-2xl bg-[#FDF1F3] text-[#7A1228] flex items-center justify-center mx-auto mb-3">
+                        <Bell class="w-6 h-6" />
+                    </div>
+                    <h3 class="text-sm font-bold text-gray-800">Tidak ada notifikasi</h3>
+                    <p class="text-xs text-gray-400 mt-1">
+                        {{ activeTab === 'unread' ? 'Semua notifikasi telah Anda baca.' : 'Belum ada notifikasi di sini.' }}
+                    </p>
+                </div>
             </div>
         </div>
     </KonveksiLayout>
