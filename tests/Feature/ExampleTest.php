@@ -56,6 +56,7 @@ class ExampleTest extends TestCase
         $this->get('/gudang/orders')->assertStatus(200);
         $this->get('/gudang/persediaan')->assertStatus(200);
         $this->get('/gudang/apparel')->assertStatus(200);
+        $this->get('/gudang/progres-konveksi')->assertStatus(200);
         $this->get('/gudang/quality-control')->assertStatus(200);
         $this->get('/gudang/notifications')->assertStatus(200);
         $this->get('/gudang/profile')->assertStatus(200);
