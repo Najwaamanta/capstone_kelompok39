@@ -232,12 +232,12 @@ class OperationalSeeder extends Seeder
 
         $this->createStagesForOrder($order14);
 
-        // Notifikasi Sesuai Screenshot
+        // Notifikasi Sesuai Screenshot Figma
         AppNotification::firstOrCreate(
             ['order_id' => $order18->id, 'judul' => 'Progres konveksi diperbarui'],
             [
-                'user_id' => $tokoUser->id,
-                'target_role' => 'admin_toko',
+                'user_id' => null,
+                'target_role' => null,
                 'tipe' => 'progres_diperbarui',
                 'pesan' => 'ORD-2506-018 masuk tahap Produksi Konveksi.',
                 'dibaca' => false,
@@ -248,8 +248,8 @@ class OperationalSeeder extends Seeder
         AppNotification::firstOrCreate(
             ['order_id' => $order17->id, 'judul' => 'Negosiasi tanggal menunggu respons'],
             [
-                'user_id' => $tokoUser->id,
-                'target_role' => 'admin_toko',
+                'user_id' => null,
+                'target_role' => null,
                 'tipe' => 'negosiasi_masuk',
                 'pesan' => 'Estimasi ORD-2506-017 diusulkan menjadi 26 Jun 2025.',
                 'dibaca' => false,
@@ -260,8 +260,8 @@ class OperationalSeeder extends Seeder
         AppNotification::firstOrCreate(
             ['order_id' => $order18->id, 'judul' => 'Pesanan baru diterima'],
             [
-                'user_id' => $tokoUser->id,
-                'target_role' => 'admin_toko',
+                'user_id' => null,
+                'target_role' => null,
                 'tipe' => 'pesanan_baru',
                 'pesan' => 'ORD-2506-018 dari Maison Aurelia telah diteruskan.',
                 'dibaca' => true,
@@ -272,10 +272,10 @@ class OperationalSeeder extends Seeder
         AppNotification::firstOrCreate(
             ['order_id' => $order15->id, 'judul' => 'Hasil QC: Lulus'],
             [
-                'user_id' => $tokoUser->id,
-                'target_role' => 'admin_toko',
+                'user_id' => null,
+                'target_role' => null,
                 'tipe' => 'hasil_qc',
-                'pesan' => 'Seluruh 60 pcs ORD-2506-015 lulus pemeriksaan.',
+                'pesan' => 'Seluruh 60 pcs ORD-2506-015 lolos pemeriksaan.',
                 'dibaca' => true,
                 'created_at' => Carbon::yesterday()->setTime(14, 20),
             ]

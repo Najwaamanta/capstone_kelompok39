@@ -8,8 +8,12 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Gudang\GudangDashboardController;
 use App\Http\Controllers\Gudang\GudangNegotiationController;
+use App\Http\Controllers\Gudang\GudangNotificationController;
 use App\Http\Controllers\Gudang\GudangOrderController;
+use App\Http\Controllers\Gudang\GudangProfileController;
+use App\Http\Controllers\Gudang\GudangQualityControlController;
 use App\Http\Controllers\Toko\TokoDashboardController;
 use App\Http\Controllers\Toko\TokoNegotiationController;
 use App\Http\Controllers\Toko\TokoNotificationController;
@@ -25,7 +29,7 @@ Route::get('/', function () {
         if ($user->role === 'admin_toko') {
             return redirect()->route('toko.dashboard');
         } elseif ($user->role === 'admin_gudang') {
-            return redirect()->route('gudang.orders.index');
+            return redirect()->route('gudang.dashboard');
         }
         return redirect()->route('admin.dashboard');
     }
@@ -104,9 +108,13 @@ Route::middleware('auth')->group(function () {
     });
 
     // ==========================================
-    // Modul Admin Gudang (Pesanan - Develop 2)
+    // Modul Admin Gudang (Dashboard & Operasional)
     // ==========================================
     Route::prefix('gudang')->name('gudang.')->middleware('role:admin_gudang')->group(function () {
+        // Dashboard Gudang
+        Route::get('/dashboard', [GudangDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/', function () { return redirect()->route('gudang.dashboard'); });
+
         // Pesanan Gudang (US-G01, US-G02, US-G03, US-G04, US-G05)
         Route::get('/orders', [GudangOrderController::class, 'index'])->name('orders.index');
         Route::post('/orders/{order}/approve', [GudangOrderController::class, 'approve'])->name('orders.approve');
@@ -114,6 +122,20 @@ Route::middleware('auth')->group(function () {
         Route::post('/orders/{order}/negotiate', [GudangOrderController::class, 'negotiate'])->name('orders.negotiate');
         // Respons negosiasi dari Toko (US-G03)
         Route::post('/orders/{order}/negotiations/{negotiation}/respond', [GudangNegotiationController::class, 'respond'])->name('orders.negotiations.respond');
+
+        // Navigasi Ruang Kerja Sesuai Figma
+        Route::get('/persediaan', function () { return \Inertia\Inertia::render('Gudang/Persediaan'); })->name('persediaan');
+        Route::get('/apparel', function () { return \Inertia\Inertia::render('Gudang/Apparel'); })->name('apparel');
+        Route::get('/progres-konveksi', function () { return redirect()->route('gudang.orders.index', ['status' => 'dalam_produksi']); })->name('progres-konveksi');
+        Route::get('/quality-control', [GudangQualityControlController::class, 'index'])->name('quality-control');
+        Route::post('/quality-control/{order}', [GudangQualityControlController::class, 'store'])->name('quality-control.store');
+
+        // Notifikasi & Profil Admin Gudang
+        Route::get('/notifications', [GudangNotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/mark-all-read', [GudangNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+        Route::post('/notifications/{notification}/read', [GudangNotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::get('/profile', [GudangProfileController::class, 'index'])->name('profile.index');
+        Route::put('/profile', [GudangProfileController::class, 'update'])->name('profile.update');
     });
 });
 
