@@ -17,9 +17,15 @@ class AuthController extends Controller
     /**
      * Show the login page.
      */
-    public function showLogin(): Response
+    public function showLogin()
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'admin_toko') {
+                return redirect()->route('toko.dashboard');
+            } elseif ($user->role === 'admin_gudang') {
+                return redirect()->route('gudang.orders.index');
+            }
             return redirect()->route('admin.dashboard');
         }
 
@@ -73,16 +79,30 @@ class AuthController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        // For now, if non-admin logs in (e.g. admin toko, gudang, konveksi)
+        if ($user->role === 'admin_toko') {
+            return redirect()->intended(route('toko.dashboard'));
+        }
+
+        if ($user->role === 'admin_gudang') {
+            return redirect()->intended(route('gudang.orders.index'));
+        }
+
+        // Default redirect
         return redirect()->intended(route('admin.dashboard'));
     }
 
     /**
      * Show registration page.
      */
-    public function showRegister(): Response
+    public function showRegister()
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'admin_toko') {
+                return redirect()->route('toko.dashboard');
+            } elseif ($user->role === 'admin_gudang') {
+                return redirect()->route('gudang.orders.index');
+            }
             return redirect()->route('admin.dashboard');
         }
 

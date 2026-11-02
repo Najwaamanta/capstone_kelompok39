@@ -37,15 +37,19 @@ class RoleMiddleware
 
         // Check role permission
         if (!empty($roles) && !in_array($user->role, $roles)) {
-            // For non-admin users trying to access admin routes, log out and redirect with message
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            // For non-admin users trying to access administrator routes, preserve original behavior
+            if (in_array('administrator', $roles)) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
 
-            return redirect()->route('login')->with(
-                'error',
-                'Akun Anda (' . $user->name . ') tidak memiliki hak akses ke halaman Administrator. Silakan masuk dengan akun Administrator.'
-            );
+                return redirect()->route('login')->with(
+                    'error',
+                    'Akun Anda (' . $user->name . ') tidak memiliki hak akses ke halaman Administrator. Silakan masuk dengan akun Administrator.'
+                );
+            }
+
+            abort(403, 'Akun Anda tidak memiliki hak akses ke halaman ini.');
         }
 
         return $next($request);
