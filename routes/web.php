@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/notifikasi', [KonveksiNotificationController::class, 'index'])->name('notifikasi.index');
         Route::get('/profil', [KonveksiProfileController::class, 'index'])->name('profil.index');
         Route::put('/profil', [KonveksiProfileController::class, 'update'])->name('profil.update');
+        Route::put('/profil/password', [KonveksiProfileController::class, 'updatePassword'])->name('profil.password');
     });
 });
 

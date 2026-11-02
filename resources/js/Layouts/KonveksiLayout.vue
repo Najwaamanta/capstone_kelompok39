@@ -24,11 +24,18 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    unreadCount: {
+        type: Number,
+        default: undefined,
+    },
 });
 
 const page = usePage();
 const authUser = computed(() => page.props.auth?.user);
-const unreadNotificationCount = computed(() => page.props.unreadNotificationCount || 2);
+const unreadNotificationCount = computed(() => {
+    if (props.unreadCount !== undefined) return props.unreadCount;
+    return page.props.unreadNotificationCount ?? 2;
+});
 
 // Floating Toast Notification System
 const activeToast = ref(null);
@@ -67,7 +74,7 @@ const showMobileMenu = ref(false);
 const showLogoutModal = ref(false);
 const showUserDropdown = ref(false);
 
-const navItems = [
+const navItems = computed(() => [
     {
         name: 'Dashboard',
         route: '/konveksi/dashboard',
@@ -84,7 +91,7 @@ const navItems = [
         name: 'Notifikasi',
         route: '/konveksi/notifikasi',
         icon: Bell,
-        badge: 2,
+        badge: unreadNotificationCount.value,
         activeRule: (url) => url.startsWith('/konveksi/notifikasi'),
     },
     {
@@ -93,7 +100,7 @@ const navItems = [
         icon: User,
         activeRule: (url) => url.startsWith('/konveksi/profil'),
     },
-];
+]);
 
 const handleLogout = () => {
     router.post('/logout');
@@ -114,7 +121,7 @@ const handleLogout = () => {
                         onerror="this.onerror=null; this.src='/images/logo_liliebelle.png';"
                     />
                     <div>
-                        <div class="text-xl font-bold tracking-tight text-[#4A0D1B] group-hover:text-[#7A1228] transition-colors leading-tight">
+                        <div class="text-xl font-bold font-heading tracking-tight text-[#4A0D1B] group-hover:text-[#7A1228] transition-colors leading-tight">
                             LilieFlow
                         </div>
                         <div class="text-[11px] font-medium text-[#9E8B90] tracking-wide">
@@ -363,10 +370,10 @@ const handleLogout = () => {
                     </button>
 
                     <!-- Breadcrumbs matching screenshot -->
-                    <div class="flex items-center gap-2 text-sm text-[#8E7E84]">
+                    <div class="flex items-center gap-2 text-xs text-[#8E7E84]">
                         <span class="text-[#8E7E84] font-medium">LilieFlow</span>
-                        <ChevronRight class="w-4 h-4 text-[#C4B6B9]" />
-                        <span class="text-[#2A0711] font-semibold">
+                        <ChevronRight class="w-3.5 h-3.5 text-[#C4B6B9]" />
+                        <span class="text-[#2A0711] font-bold font-heading">
                             {{ title }}
                         </span>
                     </div>

@@ -7,7 +7,8 @@ import {
     Calendar,
     FileText,
     ClipboardCheck,
-    Bell
+    Bell,
+    CheckCheck
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -32,6 +33,12 @@ const filteredNotifications = computed(() => {
 
 const toggleRead = (notif) => {
     notif.is_unread = !notif.is_unread;
+};
+
+const markAllAsRead = () => {
+    localNotifications.value.forEach((notif) => {
+        notif.is_unread = false;
+    });
 };
 
 const getIconConfig = (type) => {
@@ -68,11 +75,12 @@ const getIconConfig = (type) => {
 <template>
     <Head title="Notifikasi - Admin Konveksi" />
 
-    <KonveksiLayout title="Notifikasi">
+    <KonveksiLayout title="Notifikasi" :unread-count="unreadCount">
         <!-- Main Notification Container matching screenshot exactly -->
         <div class="bg-white rounded-2xl border border-[#F0E6E8] shadow-xs overflow-hidden">
-            <!-- Tabs Bar Header -->
-            <div class="px-6 pt-5 border-b border-[#F0E6E8]">
+            <!-- Tabs Bar Header with "Tandai semua dibaca" Button on the right -->
+            <div class="px-6 pt-5 border-b border-[#F0E6E8] flex items-center justify-between flex-wrap gap-3">
+                <!-- Left: Tabs (Semua & Belum dibaca) -->
                 <div class="flex items-center gap-6">
                     <!-- Tab: Semua -->
                     <button
@@ -134,6 +142,23 @@ const getIconConfig = (type) => {
                         ></span>
                     </button>
                 </div>
+
+                <!-- Right: Button Tandai semua dibaca -->
+                <button
+                    type="button"
+                    @click="markAllAsRead"
+                    :disabled="unreadCount === 0"
+                    :class="[
+                        'pb-3 flex items-center gap-1.5 text-xs font-semibold transition-all',
+                        unreadCount > 0
+                            ? 'text-[#7A1228] hover:text-[#9A1633] cursor-pointer'
+                            : 'text-gray-400 cursor-not-allowed opacity-50'
+                    ]"
+                    title="Tandai semua notifikasi telah dibaca"
+                >
+                    <CheckCheck class="w-4 h-4" />
+                    <span>Tandai semua dibaca</span>
+                </button>
             </div>
 
             <!-- Notification Items List -->

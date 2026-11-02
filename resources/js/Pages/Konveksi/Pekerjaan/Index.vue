@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import KonveksiLayout from '@/Layouts/KonveksiLayout.vue';
+import JobDetailModal from '@/Components/JobDetailModal.vue';
 import {
     Shirt,
     Eye,
@@ -238,119 +239,12 @@ const getBadgeStyle = (status) => {
             </div>
         </div>
 
-        <!-- Detail Modal -->
-        <div
-            v-if="selectedDetailJob"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
-        >
-            <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-[#F0E6E8] overflow-hidden animate-in fade-in zoom-in-95">
-                <!-- Modal Header -->
-                <div class="flex items-center justify-between pb-4 border-b border-[#F0E6E8]">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-[#FDF1F3] text-[#7A1228] flex items-center justify-center shrink-0">
-                            <Shirt class="w-5 h-5" />
-                        </div>
-                        <div>
-                            <h3 class="text-base font-bold text-[#1F2937]">
-                                {{ selectedDetailJob.order_number }}
-                            </h3>
-                            <p class="text-xs text-[#8E7E84]">
-                                {{ selectedDetailJob.item_name }} · {{ selectedDetailJob.sku }}
-                            </p>
-                        </div>
-                    </div>
-                    <button
-                        type="button"
-                        @click="closeDetailModal"
-                        class="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-                    >
-                        <X class="w-5 h-5" />
-                    </button>
-                </div>
-
-                <!-- Modal Body -->
-                <div class="py-4 space-y-4 max-h-[65vh] overflow-y-auto pr-1">
-                    <!-- Info Grid -->
-                    <div class="grid grid-cols-2 gap-3 p-3.5 bg-[#FAF7F8] rounded-xl border border-[#F2E5E8] text-xs">
-                        <div>
-                            <span class="text-gray-400 block mb-0.5">Kategori</span>
-                            <span class="font-bold text-gray-800">{{ selectedDetailJob.category }}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400 block mb-0.5">Bahan Baku</span>
-                            <span class="font-bold text-gray-800">{{ selectedDetailJob.fabric }}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400 block mb-0.5">Jumlah Target</span>
-                            <span class="font-bold text-[#7A1228]">{{ selectedDetailJob.quantity }} pcs</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400 block mb-0.5">Batas Penyelesaian</span>
-                            <span class="font-bold text-gray-800">{{ selectedDetailJob.target_date }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Catatan Produksi -->
-                    <div>
-                        <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                            <FileText class="w-3.5 h-3.5 text-[#7A1228]" />
-                            Catatan Operasional
-                        </h4>
-                        <p class="text-xs text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100 leading-relaxed italic">
-                            "{{ selectedDetailJob.notes }}"
-                        </p>
-                    </div>
-
-                    <!-- Tahapan / Timeline Pengerjaan -->
-                    <div>
-                        <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <Layers class="w-3.5 h-3.5 text-[#7A1228]" />
-                            Tahapan Produksi
-                        </h4>
-                        <div class="space-y-2">
-                            <div
-                                v-for="(stage, idx) in selectedDetailJob.timeline"
-                                :key="idx"
-                                class="flex items-center justify-between p-2.5 rounded-xl border border-gray-100 bg-white text-xs"
-                            >
-                                <div class="flex items-center gap-2.5">
-                                    <div
-                                        :class="[
-                                            'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold',
-                                            stage.status === 'Selesai' ? 'bg-emerald-100 text-emerald-800' :
-                                            stage.status === 'Sedang Berjalan' ? 'bg-[#FDF1F3] text-[#7A1228]' : 'bg-gray-100 text-gray-500'
-                                        ]"
-                                    >
-                                        {{ idx + 1 }}
-                                    </div>
-                                    <span class="font-semibold text-gray-800">{{ stage.stage }}</span>
-                                </div>
-                                <span
-                                    :class="[
-                                        'px-2 py-0.5 rounded-full text-[11px] font-semibold',
-                                        stage.status === 'Selesai' ? 'bg-emerald-50 text-emerald-700' :
-                                        stage.status === 'Sedang Berjalan' ? 'bg-[#FDF1F3] text-[#7A1228]' : 'bg-gray-100 text-gray-500'
-                                    ]"
-                                >
-                                    {{ stage.status }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal Footer -->
-                <div class="pt-4 border-t border-[#F0E6E8] flex justify-end">
-                    <button
-                        type="button"
-                        @click="closeDetailModal"
-                        class="px-5 py-2 rounded-xl bg-gray-100 text-gray-700 text-xs font-bold hover:bg-gray-200 transition-colors"
-                    >
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        </div>
+        <!-- Detail Modal Component matching exact 3-tabs design -->
+        <JobDetailModal
+            :show="!!selectedDetailJob"
+            :job="selectedDetailJob"
+            @close="selectedDetailJob = null"
+        />
 
         <!-- Perbarui Status Modal -->
         <div

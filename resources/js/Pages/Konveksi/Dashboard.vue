@@ -1,6 +1,8 @@
 <script setup>
+import { ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import KonveksiLayout from '@/Layouts/KonveksiLayout.vue';
+import JobDetailModal from '@/Components/JobDetailModal.vue';
 import {
     Factory,
     Shirt,
@@ -35,6 +37,12 @@ const props = defineProps({
         default: () => [],
     },
 });
+
+const selectedDetailJob = ref(null);
+
+const openJobDetail = (job) => {
+    selectedDetailJob.value = job;
+};
 
 const getBadgeStyle = (color) => {
     switch (color) {
@@ -192,7 +200,8 @@ const getDotColor = (color) => {
                     <div
                         v-for="job in priorityJobs"
                         :key="job.id"
-                        class="py-4.5 first:pt-4 last:pb-1 group transition-colors"
+                        @click="openJobDetail(job)"
+                        class="py-4.5 first:pt-4 last:pb-1 group transition-colors cursor-pointer hover:bg-[#FDF9FA]/80 px-2 rounded-xl"
                     >
                         <div class="flex items-center justify-between gap-4">
                             <!-- Left: Icon + Info -->
@@ -202,7 +211,7 @@ const getDotColor = (color) => {
                                 </div>
                                 <div class="min-w-0">
                                     <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="text-sm font-bold text-[#1F2937]">
+                                        <span class="text-sm font-bold text-[#1F2937] group-hover:text-[#7A1228] transition-colors">
                                             {{ job.order_number }}
                                         </span>
                                         <span
@@ -231,12 +240,14 @@ const getDotColor = (color) => {
                                         {{ job.target_date }}
                                     </div>
                                 </div>
-                                <Link
-                                    :href="`/konveksi/pekerjaan?highlight=${job.id}`"
+                                <button
+                                    type="button"
+                                    @click.stop="openJobDetail(job)"
                                     class="p-1 rounded-lg text-gray-400 group-hover:text-[#7A1228] group-hover:translate-x-0.5 transition-all"
+                                    title="Lihat Detail Pekerjaan"
                                 >
                                     <ChevronRight class="w-5 h-5" />
-                                </Link>
+                                </button>
                             </div>
                         </div>
 
@@ -305,6 +316,12 @@ const getDotColor = (color) => {
                 </div>
             </div>
         </div>
+        <!-- Detail Modal Component matching exact 3-tabs design -->
+        <JobDetailModal
+            :show="!!selectedDetailJob"
+            :job="selectedDetailJob"
+            @close="selectedDetailJob = null"
+        />
     </KonveksiLayout>
 </template>
 
