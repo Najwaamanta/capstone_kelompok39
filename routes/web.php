@@ -8,12 +8,25 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Gudang\GudangNegotiationController;
+use App\Http\Controllers\Gudang\GudangOrderController;
+use App\Http\Controllers\Toko\TokoDashboardController;
+use App\Http\Controllers\Toko\TokoNegotiationController;
+use App\Http\Controllers\Toko\TokoNotificationController;
+use App\Http\Controllers\Toko\TokoOrderController;
+use App\Http\Controllers\Toko\TokoProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Root redirect
 Route::get('/', function () {
     if (Auth::check()) {
+        $user = Auth::user();
+        if ($user->role === 'admin_toko') {
+            return redirect()->route('toko.dashboard');
+        } elseif ($user->role === 'admin_gudang') {
+            return redirect()->route('gudang.orders.index');
+        }
         return redirect()->route('admin.dashboard');
     }
     return redirect()->route('login');
@@ -62,6 +75,45 @@ Route::middleware('auth')->group(function () {
         // Password Reset Requests (dari admin)
         Route::post('/password-reset-requests/{passwordResetRequest}/resolve', [PasswordResetRequestController::class, 'resolve'])->name('password-reset.resolve');
         Route::post('/password-reset-requests/{passwordResetRequest}/cancel', [PasswordResetRequestController::class, 'cancel'])->name('password-reset.cancel');
+    });
+
+    // ==========================================
+    // Modul Admin Toko (Develop 2)
+    // ==========================================
+    Route::prefix('toko')->name('toko.')->middleware('role:admin_toko')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [TokoDashboardController::class, 'index'])->name('dashboard');
+
+        // Pesanan (US-T05, US-T06, US-T07)
+        Route::get('/orders', [TokoOrderController::class, 'index'])->name('orders.index');
+        Route::post('/orders', [TokoOrderController::class, 'store'])->name('orders.store');
+        Route::post('/orders/{order}/cancel', [TokoOrderController::class, 'cancel'])->name('orders.cancel');
+
+        // Negosiasi Tanggal (US-N01, US-N02)
+        Route::post('/orders/{order}/negotiate', [TokoNegotiationController::class, 'propose'])->name('orders.negotiate');
+        Route::post('/orders/{order}/negotiations/{negotiation}/respond', [TokoNegotiationController::class, 'respond'])->name('orders.negotiations.respond');
+
+        // Notifikasi (US-T08)
+        Route::get('/notifications', [TokoNotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{notification}/read', [TokoNotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/mark-all-read', [TokoNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+
+        // Profil (US-T09)
+        Route::get('/profile', [TokoProfileController::class, 'index'])->name('profile.index');
+        Route::put('/profile', [TokoProfileController::class, 'update'])->name('profile.update');
+    });
+
+    // ==========================================
+    // Modul Admin Gudang (Pesanan - Develop 2)
+    // ==========================================
+    Route::prefix('gudang')->name('gudang.')->middleware('role:admin_gudang')->group(function () {
+        // Pesanan Gudang (US-G01, US-G02, US-G03, US-G04, US-G05)
+        Route::get('/orders', [GudangOrderController::class, 'index'])->name('orders.index');
+        Route::post('/orders/{order}/approve', [GudangOrderController::class, 'approve'])->name('orders.approve');
+        Route::post('/orders/{order}/schedule', [GudangOrderController::class, 'updateSchedule'])->name('orders.schedule');
+        Route::post('/orders/{order}/negotiate', [GudangOrderController::class, 'negotiate'])->name('orders.negotiate');
+        // Respons negosiasi dari Toko (US-G03)
+        Route::post('/orders/{order}/negotiations/{negotiation}/respond', [GudangNegotiationController::class, 'respond'])->name('orders.negotiations.respond');
     });
 });
 
