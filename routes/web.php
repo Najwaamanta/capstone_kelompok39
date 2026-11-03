@@ -12,6 +12,18 @@ use App\Http\Controllers\Konveksi\DashboardController as KonveksiDashboardContro
 use App\Http\Controllers\Konveksi\NotificationController as KonveksiNotificationController;
 use App\Http\Controllers\Konveksi\PekerjaanController as KonveksiPekerjaanController;
 use App\Http\Controllers\Konveksi\ProfileController as KonveksiProfileController;
+use App\Http\Controllers\Gudang\GudangDashboardController;
+use App\Http\Controllers\Gudang\GudangNegotiationController;
+use App\Http\Controllers\Gudang\GudangNotificationController;
+use App\Http\Controllers\Gudang\GudangOrderController;
+use App\Http\Controllers\Gudang\GudangProfileController;
+use App\Http\Controllers\Gudang\GudangProgresKonveksiController;
+use App\Http\Controllers\Gudang\GudangQualityControlController;
+use App\Http\Controllers\Toko\TokoDashboardController;
+use App\Http\Controllers\Toko\TokoNegotiationController;
+use App\Http\Controllers\Toko\TokoNotificationController;
+use App\Http\Controllers\Toko\TokoOrderController;
+use App\Http\Controllers\Toko\TokoProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +33,10 @@ Route::get('/', function () {
         $user = Auth::user();
         if ($user->role === 'admin_konveksi') {
             return redirect()->route('konveksi.dashboard');
+        } elseif ($user->role === 'admin_toko') {
+            return redirect()->route('toko.dashboard');
+        } elseif ($user->role === 'admin_gudang') {
+            return redirect()->route('gudang.dashboard');
         }
         return redirect()->route('admin.dashboard');
     }
@@ -81,6 +97,63 @@ Route::middleware('auth')->group(function () {
         Route::get('/profil', [KonveksiProfileController::class, 'index'])->name('profil.index');
         Route::put('/profil', [KonveksiProfileController::class, 'update'])->name('profil.update');
         Route::put('/profil/password', [KonveksiProfileController::class, 'updatePassword'])->name('profil.password');
+    });
+
+    // ==========================================
+    // Modul Admin Toko (Develop 2)
+    // ==========================================
+    Route::prefix('toko')->name('toko.')->middleware('role:admin_toko')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [TokoDashboardController::class, 'index'])->name('dashboard');
+
+        // Pesanan (US-T05, US-T06, US-T07)
+        Route::get('/orders', [TokoOrderController::class, 'index'])->name('orders.index');
+        Route::post('/orders', [TokoOrderController::class, 'store'])->name('orders.store');
+        Route::post('/orders/{order}/cancel', [TokoOrderController::class, 'cancel'])->name('orders.cancel');
+
+        // Negosiasi Tanggal (US-N01, US-N02)
+        Route::post('/orders/{order}/negotiate', [TokoNegotiationController::class, 'propose'])->name('orders.negotiate');
+        Route::post('/orders/{order}/negotiations/{negotiation}/respond', [TokoNegotiationController::class, 'respond'])->name('orders.negotiations.respond');
+
+        // Notifikasi (US-T08)
+        Route::get('/notifications', [TokoNotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{notification}/read', [TokoNotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/mark-all-read', [TokoNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+
+        // Profil (US-T09)
+        Route::get('/profile', [TokoProfileController::class, 'index'])->name('profile.index');
+        Route::put('/profile', [TokoProfileController::class, 'update'])->name('profile.update');
+    });
+
+    // ==========================================
+    // Modul Admin Gudang (Dashboard & Operasional)
+    // ==========================================
+    Route::prefix('gudang')->name('gudang.')->middleware('role:admin_gudang')->group(function () {
+        // Dashboard Gudang
+        Route::get('/dashboard', [GudangDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/', function () { return redirect()->route('gudang.dashboard'); });
+
+        // Pesanan Gudang (US-G01, US-G02, US-G03, US-G04, US-G05)
+        Route::get('/orders', [GudangOrderController::class, 'index'])->name('orders.index');
+        Route::post('/orders/{order}/approve', [GudangOrderController::class, 'approve'])->name('orders.approve');
+        Route::post('/orders/{order}/schedule', [GudangOrderController::class, 'updateSchedule'])->name('orders.schedule');
+        Route::post('/orders/{order}/negotiate', [GudangOrderController::class, 'negotiate'])->name('orders.negotiate');
+        // Respons negosiasi dari Toko (US-G03)
+        Route::post('/orders/{order}/negotiations/{negotiation}/respond', [GudangNegotiationController::class, 'respond'])->name('orders.negotiations.respond');
+
+        // Navigasi Ruang Kerja Sesuai Figma
+        Route::get('/persediaan', function () { return \Inertia\Inertia::render('Gudang/Persediaan'); })->name('persediaan');
+        Route::get('/apparel', function () { return \Inertia\Inertia::render('Gudang/Apparel'); })->name('apparel');
+        Route::get('/progres-konveksi', [GudangProgresKonveksiController::class, 'index'])->name('progres-konveksi');
+        Route::get('/quality-control', [GudangQualityControlController::class, 'index'])->name('quality-control');
+        Route::post('/quality-control/{order}', [GudangQualityControlController::class, 'store'])->name('quality-control.store');
+
+        // Notifikasi & Profil Admin Gudang
+        Route::get('/notifications', [GudangNotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/mark-all-read', [GudangNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+        Route::post('/notifications/{notification}/read', [GudangNotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::get('/profile', [GudangProfileController::class, 'index'])->name('profile.index');
+        Route::put('/profile', [GudangProfileController::class, 'update'])->name('profile.update');
     });
 });
 

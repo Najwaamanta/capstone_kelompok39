@@ -57,6 +57,14 @@ class HandleInertiaRequests extends Middleware
             'pendingActivationCount' => fn () => $user && $user->role === 'administrator'
                 ? User::where('status', 'perlu_aktivasi')->count()
                 : 0,
+            'unreadNotificationsCount' => function () use ($user) {
+                if (!$user) return 0;
+                try {
+                    return \App\Models\AppNotification::forUserOrRole($user)->unread()->count();
+                } catch (\Throwable $e) {
+                    return 0;
+                }
+            },
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

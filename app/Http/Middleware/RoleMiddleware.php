@@ -51,6 +51,20 @@ class RoleMiddleware
                 );
             }
 
+            if ($user->role === 'admin_toko') {
+                return redirect()->route('toko.dashboard')->with(
+                    'error',
+                    'Akun Anda tidak memiliki hak akses ke halaman tersebut.'
+                );
+            }
+
+            if ($user->role === 'admin_gudang') {
+                return redirect()->route('gudang.dashboard')->with(
+                    'error',
+                    'Akun Anda tidak memiliki hak akses ke halaman tersebut.'
+                );
+            }
+
             // For unauthorized user roles
             Auth::logout();
             $request->session()->invalidate();

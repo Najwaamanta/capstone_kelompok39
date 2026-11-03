@@ -195,5 +195,8 @@ class DatabaseSeeder extends Seeder
         ActivityLog::record(null, 'REGISTER', 'Pendaftaran mandiri akun baru Nadia Putri (Permohonan: Admin Toko)', $pending1->id);
         ActivityLog::record(null, 'REGISTER', 'Pendaftaran mandiri akun baru Dimas Anggara (Permohonan: Admin Gudang)', $pending2->id);
         ActivityLog::record(null, 'REGISTER', 'Pendaftaran mandiri akun baru Citra Kirana (Permohonan: Admin Konveksi)', $pending3->id);
+
+        // Panggil seeder workspace operasional (Toko & Gudang)
+        $this->call(OperationalSeeder::class);
     }
 }
