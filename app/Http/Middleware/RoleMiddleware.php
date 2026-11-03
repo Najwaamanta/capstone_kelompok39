@@ -37,19 +37,43 @@ class RoleMiddleware
 
         // Check role permission
         if (!empty($roles) && !in_array($user->role, $roles)) {
-            // For non-admin users trying to access administrator routes, preserve original behavior
-            if (in_array('administrator', $roles)) {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
-                return redirect()->route('login')->with(
+            if ($user->role === 'admin_konveksi') {
+                return redirect()->route('konveksi.dashboard')->with(
                     'error',
-                    'Akun Anda (' . $user->name . ') tidak memiliki hak akses ke halaman Administrator. Silakan masuk dengan akun Administrator.'
+                    'Akun Anda tidak memiliki hak akses ke halaman tersebut.'
                 );
             }
 
-            abort(403, 'Akun Anda tidak memiliki hak akses ke halaman ini.');
+            if ($user->role === 'administrator') {
+                return redirect()->route('admin.dashboard')->with(
+                    'error',
+                    'Akun Anda tidak memiliki hak akses ke halaman tersebut.'
+                );
+            }
+
+            if ($user->role === 'admin_toko') {
+                return redirect()->route('toko.dashboard')->with(
+                    'error',
+                    'Akun Anda tidak memiliki hak akses ke halaman tersebut.'
+                );
+            }
+
+            if ($user->role === 'admin_gudang') {
+                return redirect()->route('gudang.dashboard')->with(
+                    'error',
+                    'Akun Anda tidak memiliki hak akses ke halaman tersebut.'
+                );
+            }
+
+            // For unauthorized user roles
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->with(
+                'error',
+                'Akun Anda (' . $user->name . ') tidak memiliki hak akses ke halaman tersebut.'
+            );
         }
 
         return $next($request);

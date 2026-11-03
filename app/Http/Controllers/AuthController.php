@@ -21,10 +21,12 @@ class AuthController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->role === 'admin_toko') {
+            if ($user->role === 'admin_konveksi') {
+                return redirect()->route('konveksi.dashboard');
+            } elseif ($user->role === 'admin_toko') {
                 return redirect()->route('toko.dashboard');
             } elseif ($user->role === 'admin_gudang') {
-                return redirect()->route('gudang.orders.index');
+                return redirect()->route('gudang.dashboard');
             }
             return redirect()->route('admin.dashboard');
         }
@@ -79,6 +81,10 @@ class AuthController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         }
 
+        if ($user->role === 'admin_konveksi') {
+            return redirect()->intended(route('konveksi.dashboard'));
+        }
+
         if ($user->role === 'admin_toko') {
             return redirect()->intended(route('toko.dashboard'));
         }
@@ -87,7 +93,7 @@ class AuthController extends Controller
             return redirect()->intended(route('gudang.dashboard'));
         }
 
-        // Default redirect
+        // Default fallback
         return redirect()->intended(route('admin.dashboard'));
     }
 
@@ -98,10 +104,12 @@ class AuthController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->role === 'admin_toko') {
+            if ($user->role === 'admin_konveksi') {
+                return redirect()->route('konveksi.dashboard');
+            } elseif ($user->role === 'admin_toko') {
                 return redirect()->route('toko.dashboard');
             } elseif ($user->role === 'admin_gudang') {
-                return redirect()->route('gudang.orders.index');
+                return redirect()->route('gudang.dashboard');
             }
             return redirect()->route('admin.dashboard');
         }

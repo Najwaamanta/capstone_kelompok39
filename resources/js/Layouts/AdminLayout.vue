@@ -120,7 +120,7 @@ const handleLogout = () => {
                         onerror="this.onerror=null; this.src='/images/logo_liliebelle.png';"
                     />
                     <div>
-                        <div class="text-xl font-bold tracking-tight text-[#4A0D1B] group-hover:text-[#7A1228] transition-colors">
+                        <div class="text-xl font-bold font-heading tracking-tight text-[#4A0D1B] group-hover:text-[#7A1228] transition-colors">
                             LilieFlow
                         </div>
                         <div class="text-[11px] font-medium text-[#9E8B90] tracking-wide">
@@ -200,7 +200,7 @@ const handleLogout = () => {
                 <div class="flex items-center gap-3">
                     <img src="/logo_liliebelle.png" alt="LilieFlow Logo" class="w-9 h-9 object-contain rounded-md" />
                     <div>
-                        <div class="text-lg font-bold text-[#4A0D1B]">LilieFlow</div>
+                        <div class="text-lg font-bold font-heading text-[#4A0D1B]">LilieFlow</div>
                         <div class="text-[10px] text-[#9E8B90]">Operational workspace</div>
                     </div>
                 </div>
